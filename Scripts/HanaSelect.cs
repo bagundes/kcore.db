@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace K.DB.Scripts
+namespace KCore.DB.Scripts
 {
     /// <summary>
     /// Create the scripts to execute in SQL Server
     /// </summary>
-    public class HanaSelect : K.Core.Base.BaseClass, ISelect
+    public class HanaSelect : KCore.Base.BaseClass, ISelect
     {
-        public string ByPKey<T>(T model) where T : K.Core.Base.BaseTable
+        public string ByPKey<T>(T model) where T : KCore.Base.BaseTable
         {
-            var columns = K.DB.Properties.Columns.ColumnsList(model).Select(t => t.Name).ToArray();
+            var columns = KCore.DB.Properties.Columns.ColumnsList(model).Select(t => t.Name).ToArray();
             var where = new string[model.TabInfo.PKey.Length];
             var sql = $@"SELECT {"[" + String.Join("],[", columns) + "]"} FROM {model.TabInfo.DataSource}..{model.TabInfo.Table} WHERE ";
             
@@ -25,10 +25,10 @@ namespace K.DB.Scripts
             return sql;
         }
 
-        public string ByPKey<T>(params dynamic[] and) where T : K.Core.Base.BaseTable, new()
+        public string ByPKey<T>(params dynamic[] and) where T : KCore.Base.BaseTable, new()
         {
             var model = new T();
-            var columns = K.DB.Properties.Columns.ColumnsList(model).Select(t => t.Name).ToArray();
+            var columns = KCore.DB.Properties.Columns.ColumnsList(model).Select(t => t.Name).ToArray();
             var where = new string[and.Length];
             var sql = $@"SELECT {"[" + String.Join("],[", columns) + "]"} FROM {model.TabInfo.DataSource}..{model.TabInfo.Table}";
 

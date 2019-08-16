@@ -1,22 +1,22 @@
-﻿using K.Core;
+﻿using KCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace K.DB
+namespace KCore.DB
 {
     public static class QManager
     {
-        public static string GetMyQManager<T>(int code, T[] models, params dynamic[] parameters) where T : K.Core.Base.IBaseModel
+        public static string GetMyQManager<T>(int code, T[] models, params dynamic[] parameters) where T : KCore.Base.IBaseModel
         {
             var sql = MyQString(code);
 
             if (models != null && models.Length > 0)
-                K.DB.Scripts.MyTags.InternalTag(ref sql, models);
+                KCore.DB.Scripts.MyTags.InternalTag(ref sql, models);
             if (parameters != null && parameters.Length > 0)
-                K.DB.Scripts.MyTags.SAPParams(ref sql, parameters[0]);
+                KCore.DB.Scripts.MyTags.SAPParams(ref sql, parameters[0]);
 
             return sql;
         }
@@ -28,10 +28,10 @@ namespace K.DB
         /// <param name="clear">remove the like description in the qname</param>
         /// <param name="intnlkey">add internal key in the qname</param>
         /// <returns></returns>
-        public static K.Core.Model.Select2[] GetList(string like, string dbase = null, bool clear = true, bool intnlkey = true)
+        public static KCore.Model.Select2[] GetList(string like, string dbase = null, bool clear = true, bool intnlkey = true)
         {
-            var qstr = $"%{K.DB.C.Tags.HEADER_NAME}:{like}";
-            var res = new List<K.Core.Model.Select2>();
+            var qstr = $"%{KCore.DB.C.Tags.HEADER_NAME}:{like}";
+            var res = new List<KCore.Model.Select2>();
 
             var sels = Factory.Result2.SelectModel(50, dbase, Content.queries_general.OUQR_01LISTOFQUERIES_2_QNAME_QSTRING, like, qstr);
             if(clear || intnlkey)
@@ -73,25 +73,25 @@ namespace K.DB
         /// <param name="models">My personal tag</param>
         /// <param name="parameters">SAP parameters</param>
         /// <returns></returns>
-        public static string QString<T>(int intrnalKey,string database, T[] models, params object[] parameters) where T : K.Core.Base.IBaseModel
+        public static string QString<T>(int intrnalKey,string database, T[] models, params object[] parameters) where T : KCore.Base.IBaseModel
         {
             var sql = QString(intrnalKey, database);
 
             if (models != null && models.Length > 0)
-                K.DB.Scripts.MyTags.InternalTag(ref sql, models);
+                KCore.DB.Scripts.MyTags.InternalTag(ref sql, models);
             if (parameters != null && parameters.Length > 0)
-                K.DB.Scripts.MyTags.SAPParams(ref sql, parameters[0]);
+                KCore.DB.Scripts.MyTags.SAPParams(ref sql, parameters[0]);
 
             return sql;
         }
-        //public static K.DB.Model.Resultset2 Execute<T>(int intrnalKey, T[] models, params object[] parameters) where T : K.Core.Base.IBaseModel
+        //public static KCore.DB.Model.Resultset2 Execute<T>(int intrnalKey, T[] models, params object[] parameters) where T : KCore.Base.IBaseModel
         //{
         //    var sql = QString<T>(intrnalKey, models, parameters);
         //    return Factory.Result2.Top(500, sql);
 
         //}
 
-        //public static K.DB.Model.ResultSet Execute(int intrnalKey, params object[] parameters)
+        //public static KCore.DB.Model.ResultSet Execute(int intrnalKey, params object[] parameters)
         //{
         //    return Execute(intrnalKey, null, parameters);
         //}

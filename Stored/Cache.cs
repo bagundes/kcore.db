@@ -1,10 +1,10 @@
-﻿using K.DB.Model;
+﻿using KCore.DB.Model;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace K.DB.Stored
+namespace KCore.DB.Stored
 {
     public static class Cache
     {
@@ -13,7 +13,7 @@ namespace K.DB.Stored
         {
             get
             {
-                if (Factory.DataInfo.ServerType == Core.C.Database.ServerType.Hana)
+                if (Factory.DataInfo.ServerType == KCore.C.Database.ServerType.Hana)
                 {
                     Debug.WriteLine("@bfagundes - Hana doesn't support cache attributes");
                     attributes = new AttributeTable[0];

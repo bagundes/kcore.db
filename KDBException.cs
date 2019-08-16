@@ -4,9 +4,9 @@ using System.Resources;
 using System.Runtime.Serialization;
 using System.Text;
 
-namespace K.DB
+namespace KCore.DB
 {
-    public class KDBException : K.Core.Base.BaseException
+    public class KDBException : KCore.Base.BaseException
     {
         protected override ResourceManager Resx => R.Resx;
         protected override int Id => R.ID;

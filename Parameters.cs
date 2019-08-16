@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace K.DB
+namespace KCore.DB
 {
     public static class Parameters
     {
 
-        public static K.Core.Dynamic Get(int code, string dbase, string name, string var1, string var2, string var3, dynamic @default)
+        public static KCore.Dynamic Get(int code, string dbase, string name, string var1, string var2, string var3, dynamic @default)
         {
 
             var hvar1 = String.IsNullOrEmpty(var1) ? "--" : "";
@@ -32,15 +32,15 @@ namespace K.DB
             if (res != null)
                 return res;
             else
-                return Core.Dynamic.From(@default);
+                return KCore.Dynamic.From(@default);
         }
 
-        public static K.Core.Dynamic Get(int code, string dbase, string name, string var1, dynamic @default)
+        public static KCore.Dynamic Get(int code, string dbase, string name, string var1, dynamic @default)
         {
             return Get(code, dbase, name, var1, null, null, @default);
         }
 
-        public static K.Core.Dynamic Get(int code, string dbase, string name, dynamic @default)
+        public static KCore.Dynamic Get(int code, string dbase, string name, dynamic @default)
         {
             return Get(code, dbase, name, null, null, null, @default);
         }

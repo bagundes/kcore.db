@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace K.DB.Model
+namespace KCore.DB.Model
 {
     /// <summary>
     /// Resultset with diplay attributes
@@ -94,7 +94,7 @@ namespace K.DB.Model
                 if (linkto != null)
                 {
                     if (foo == null)
-                        display = Format(linkto.Display, K.Core.C.Database.TypeID.None, null);
+                        display = Format(linkto.Display, KCore.C.Database.TypeID.None, null);
                     else
                         display = Format(linkto.Display, foo.TypeID, foo.formatString);
                 }
@@ -116,7 +116,7 @@ namespace K.DB.Model
                 if (display == null)
                 {
                     if (foo == null)
-                        display = Format(data, K.Core.C.Database.TypeID.None, null);
+                        display = Format(data, KCore.C.Database.TypeID.None, null);
                     else
                         display = Format(data, foo.TypeID, foo.formatString);
                 }
@@ -142,21 +142,21 @@ namespace K.DB.Model
         /// <param name="typeId"></param>
         /// <param name="symbol"></param>
         /// <returns></returns>
-        private string Format(dynamic value, K.Core.C.Database.TypeID typeId, string formatString = null)
+        private string Format(dynamic value, KCore.C.Database.TypeID typeId, string formatString = null)
         {
 
             switch (typeId)
             {
-                case Core.C.Database.TypeID.Number:
-                    return K.Core.Dynamic.From(value).ToNumberString(formatString);
-                case Core.C.Database.TypeID.Alpha:
-                    return K.Core.Dynamic.From(value).ToString();
-                case Core.C.Database.TypeID.Price:
-                    return K.Core.Dynamic.From(value).ToPriceString(K.Core.C.Language.en_IE);
-                case Core.C.Database.TypeID.Date:
-                    return K.Core.Dynamic.From(value).ToDateString(formatString);
+                case KCore.C.Database.TypeID.Number:
+                    return KCore.Dynamic.From(value).ToNumberString(formatString);
+                case KCore.C.Database.TypeID.Alpha:
+                    return KCore.Dynamic.From(value).ToString();
+                case KCore.C.Database.TypeID.Price:
+                    return KCore.Dynamic.From(value).ToPriceString(KCore.C.Language.en_IE);
+                case KCore.C.Database.TypeID.Date:
+                    return KCore.Dynamic.From(value).ToDateString(formatString);
                 default:
-                    return K.Core.Dynamic.From(value).ToString();
+                    return KCore.Dynamic.From(value).ToString();
             }
         }
 
@@ -340,7 +340,7 @@ namespace K.DB.Model
                 lines.Add(val.Substring(0, val.Length - delimited.Length));
             }
 
-            K.Core.Shell.File.Save(lines.ToArray(), dest, true, true);
+            KCore.Shell.File.Save(lines.ToArray(), dest, true, true);
 
         }
     }

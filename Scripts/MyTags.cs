@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace K.DB.Scripts
+namespace KCore.DB.Scripts
 {
     public static class MyTags
     {
@@ -19,10 +19,10 @@ namespace K.DB.Scripts
             var tag = GetHeaderValue(C.Tags.NAMESPACE_NAME, ref val) ?? C.Tags.NAMESPACE_MARKS;
 
             val = val
-                .Replace($"U_{tag}", $"U_{K.Core.R.Company.Namespace}")
-                .Replace($"U{tag}", $"U_{K.Core.R.Company.Namespace}")
-                .Replace($"[{tag}]", $"U_{K.Core.R.Company.Namespace}")
-                .Replace($"@{tag}", $"@{K.Core.R.Company.Namespace}");
+                .Replace($"U_{tag}", $"U_{KCore.R.Company.Namespace}")
+                .Replace($"U{tag}", $"U_{KCore.R.Company.Namespace}")
+                .Replace($"[{tag}]", $"U_{KCore.R.Company.Namespace}")
+                .Replace($"@{tag}", $"@{KCore.R.Company.Namespace}");
 
             return tag;
         }
@@ -32,7 +32,7 @@ namespace K.DB.Scripts
         /// </summary>
         /// <param name="val"></param>
         /// <param name="dic"></param>
-        public static void InternalTag<T>(ref string val, T[] models) where T : K.Core.Base.IBaseModel
+        public static void InternalTag<T>(ref string val, T[] models) where T : KCore.Base.IBaseModel
         {
             if (models == null || models.Length < 1)
                 return;
@@ -83,7 +83,7 @@ namespace K.DB.Scripts
                 sql = sql.Replace($"{C.Tags.SAP_OPEN}{i}{C.Tags.SAP_CLOSE}", values[i]);
         }
 
-        public static void SetQMParams(ref string sql, params K.Core.Model.Select[] values)
+        public static void SetQMParams(ref string sql, params KCore.Model.Select[] values)
         {
             for (int i = 0; i < values.Length; i++)
                 sql = sql.Replace($"{C.Tags.SAP_OPEN}{i}{C.Tags.SAP_CLOSE}", values[i].Value);
@@ -94,7 +94,7 @@ namespace K.DB.Scripts
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public static K.Core.Model.Select[] GetQMParams(ref string sql)
+        public static KCore.Model.Select[] GetQMParams(ref string sql)
         {
             // TODO @blf - I need to transform [%0] to {0}
             // It's not need to read the header becasue the tag is default.
@@ -102,7 +102,7 @@ namespace K.DB.Scripts
             var tagSplit = C.Tags.SAP_SPLIT;
             var tagClose = C.Tags.SAP_CLOSE;
 
-            var param = new List<K.Core.Model.Select>();
+            var param = new List<KCore.Model.Select>();
             var indexes = new List<string>(); // temporary solution
             for (int p = 0; p < sql.Length; p++)
             {
@@ -119,7 +119,7 @@ namespace K.DB.Scripts
 
                 if (!tag.Contains(tagSplit.ToString()) && !tag.Contains("select"))
                 {
-                    param.Add(new K.Core.Model.Select(tag, null));
+                    param.Add(new KCore.Model.Select(tag, null));
                     indexes.Add(tag);
                     continue;
                 }
@@ -138,7 +138,7 @@ namespace K.DB.Scripts
                 }
                 else
                 {
-                    param.Add(new K.Core.Model.Select(vals[0], vals[1], true));
+                    param.Add(new KCore.Model.Select(vals[0], vals[1], true));
                     indexes.Add(vals[0]);
                 }
 
@@ -186,7 +186,7 @@ namespace K.DB.Scripts
                     throw new KDBException(LOG, C.MessageEx.LinkToIncorrectFormat3_1, val);
 
                 var tag = value.Substring(0, index);
-                K.Core.Dynamic val1 = value.Substring(index + 1);
+                KCore.Dynamic val1 = value.Substring(index + 1);
 
                 switch (tag)
                 {
@@ -200,7 +200,7 @@ namespace K.DB.Scripts
 
                         if (input)
                         {
-                            var list = new List<K.Core.Model.Select>();
+                            var list = new List<KCore.Model.Select>();
 
                             foreach (var param in val1.Split(tagParamSplit))
                             {
@@ -208,19 +208,19 @@ namespace K.DB.Scripts
                                 {
                                     var foo = param.Substring(tagInput.Length, param.Length - tagInput.Length - 1).Split('`');
                                     if (foo.Length > 1)
-                                        list.Add(new K.Core.Model.Select(foo[0].ToLower(), foo[1], input));
+                                        list.Add(new KCore.Model.Select(foo[0].ToLower(), foo[1], input));
                                     else
-                                        list.Add(new K.Core.Model.Select(foo[0].ToLower(), null, input));
+                                        list.Add(new KCore.Model.Select(foo[0].ToLower(), null, input));
                                 }
                                 else
-                                    list.Add(new K.Core.Model.Select(param));
+                                    list.Add(new KCore.Model.Select(param));
                             }
 
                             linkto.Parameters = list.ToArray();
                         }
                         else
                         {
-                            linkto.Parameters = K.Core.Model.Select.Split(val1.ToString(), tagParamSplit);
+                            linkto.Parameters = KCore.Model.Select.Split(val1.ToString(), tagParamSplit);
                         }
                         break;
                     case C.Tags.SPECIAL_DISPLAY:
@@ -228,7 +228,7 @@ namespace K.DB.Scripts
                     case C.Tags.SPECIAL_OPENAS:
                         linkto.OpenAs = (C.LinkTo.OpenAs)val1.GetEnumByIndex<C.LinkTo.OpenAs>(); break;
                     default:
-                        K.Core.Diagnostic.Warning(R.ID, LOG, 0, $"The tag {tag} not exists");
+                        KCore.Diagnostic.Warning(R.ID, LOG, 0, $"The tag {tag} not exists");
                         break;
                 }
             }

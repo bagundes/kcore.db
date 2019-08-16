@@ -1,29 +1,29 @@
-﻿using K.DB.Base;
+﻿using KCore.DB.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace K.DB.Scripts
+namespace KCore.DB.Scripts
 {
     public class MSQLInsert : IInsert
     {
-        public string Model<T>(T table, out dynamic[] pks) where T : K.Core.Base.BaseTable
+        public string Model<T>(T table, out dynamic[] pks) where T : KCore.Base.BaseTable
         {
             var pks1 = new List<dynamic>();
             var columns = new List<String>();
             var foo = new List<string>();
             var data = new List<dynamic>();
-            var hash = K.Core.Security.Hash.MD5(DateTime.Now);
+            var hash = KCore.Security.Hash.MD5(DateTime.Now);
 
             foreach (var col in DB.Properties.Columns.ColumnsList(table))
             {
-                var value = K.Core.Reflection.GetValue(table, col.Name);
+                var value = KCore.Reflection.GetValue(table, col.Name);
 
                 // Primary Key
                 if (value == null && col.PK && table.TabInfo.AutoIncrement)
                 {
-                    var ai = K.DB.Factory.Result.First($"SELECT MAX({col}) FROM [{table.TabInfo.Table}]");
+                    var ai = KCore.DB.Factory.Result.First($"SELECT MAX({col}) FROM [{table.TabInfo.Table}]");
                     string bar;
                     if (ai.IsEmpty())
                         bar = "1";
@@ -32,7 +32,7 @@ namespace K.DB.Scripts
                     else
                         bar = hash;
 
-                    K.Core.Reflection.SetValue(table, col.Name, bar);
+                    KCore.Reflection.SetValue(table, col.Name, bar);
                     value = bar;
                     pks1.Add(value);
                 }
@@ -51,10 +51,10 @@ namespace K.DB.Scripts
             foo.Add("{" + (foo.Count) + "}");
 
             // Add ObjectClass
-            var foobar = K.Core.Reflection.HasPropertyOrField(table, "ObjClass");
+            var foobar = KCore.Reflection.HasPropertyOrField(table, "ObjClass");
             if(foobar > 0)
             {
-                data.Add(K.Core.Reflection.GetValue(table, "ObjClass"));
+                data.Add(KCore.Reflection.GetValue(table, "ObjClass"));
                 columns.Add($"[ObjClass]");
                 foo.Add("{" + (foo.Count) + "}");
             }

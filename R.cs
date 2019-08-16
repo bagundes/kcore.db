@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Resources;
 using System.Text;
 
-namespace K.DB
+namespace KCore.DB
 {
     public static class R
     {
@@ -12,7 +12,7 @@ namespace K.DB
         private static System.Reflection.Assembly Assembly => System.Reflection.Assembly.GetExecutingAssembly();
         private static ResourceManager resx;
 
-        public static string Language = K.Core.R.Language;
+        public static string Language = KCore.R.Language;
         public static int ID => Project.ID;
         public static string[] Resources => Assembly.GetManifestResourceNames();
         public static ResourceManager Resx
@@ -35,8 +35,8 @@ namespace K.DB
         }
         public static class Security
         {
-            public static string MasterKey => K.Core.R.Security.MasterKey;
-            public const int Expire = K.Core.R.Security.Expire;
+            public static string MasterKey => KCore.R.Security.MasterKey;
+            public const int Expire = KCore.R.Security.Expire;
         }        
     }
 }

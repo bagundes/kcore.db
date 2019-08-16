@@ -1,12 +1,12 @@
-﻿using K.DB.Base;
+﻿using KCore.DB.Base;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace K.DB.Scripts
+namespace KCore.DB.Scripts
 {
     public interface IUpdate
     {
-        string Model<T>(T model) where T : K.Core.Base.BaseTable;
+        string Model<T>(T model) where T : KCore.Base.BaseTable;
     }
 }

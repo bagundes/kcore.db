@@ -1,14 +1,14 @@
-﻿using K.Core;
-using K.Core.Base;
-using K.Core.Model;
+﻿using KCore;
+using KCore.Base;
+using KCore.Model;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using static K.Core.C.Database;
+using static KCore.C.Database;
 
-namespace K.DB.Properties
+namespace KCore.DB.Properties
 {
     public static class Columns
     {
@@ -63,7 +63,7 @@ namespace K.DB.Properties
 
         }
 
-        public static ColumnStruct[] ColumnsList<T>(T model) where T : K.Core.Base.BaseTable
+        public static ColumnStruct[] ColumnsList<T>(T model) where T : KCore.Base.BaseTable
         {
             Load(model.TabInfo.DataSource, model.TabInfo.Table);
             var ret = new List<ColumnStruct>();
@@ -73,7 +73,7 @@ namespace K.DB.Properties
                         && t.Table.Equals(model.TabInfo.Table, StringComparison.InvariantCultureIgnoreCase)).ToArray();
 
 
-            foreach (var col in K.Core.Reflection.GetFields(model))
+            foreach (var col in KCore.Reflection.GetFields(model))
             {
                 var foo = columns.Where(t => t.Name.Equals(col.Name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
                 if (foo != null)

@@ -2,8 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>K.DB</RootNamespace>
+    <RootNamespace>KCore.DB</RootNamespace>
     <Platforms>AnyCPU;x86</Platforms>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>KCore.DB_bfagundes</PackageId>
+    <Version>1002.1.0.0</Version>
+    <Authors>Bruno de Lima Fagundes</Authors>
+    <Company />
+    <Product>K Database Library</Product>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\kcore.core\kcore.core.csproj" />
+    <ProjectReference Include="..\KCore.core\KCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

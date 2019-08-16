@@ -1,13 +1,13 @@
-﻿using K.Core;
-using K.Core.Model;
+﻿using KCore;
+using KCore.Model;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data.Odbc;
 
-namespace K.DB.Clients
+namespace KCore.DB.Clients
 {
-    public sealed partial class HanaClient : K.Core.Base.BaseClass, K.Core.Base.IBaseClient
+    public sealed partial class HanaClient : KCore.Base.BaseClass, KCore.Base.IBaseClient
     {
 
         private static DataInfo DefDataInfo;
@@ -72,7 +72,7 @@ namespace K.DB.Clients
                 cred.GetPasswd(),
                 cred.GetProperty("Port").ToInt(),
                 cred.GetProperty("Driver").ToString(),
-                Core.C.Database.ServerType.Hana);
+                KCore.C.Database.ServerType.Hana);
 
             dataInfo.Default = cred.GetProperty("Default").ToBool();
 
@@ -111,8 +111,8 @@ namespace K.DB.Clients
             }
             catch (SqlException ex)
             {
-                var id = K.Core.Diagnostic.Track(LOG, ex);
-                K.Core.Diagnostic.Error(R.ID, LOG, id, ex.Message);
+                var id = KCore.Diagnostic.Track(LOG, ex);
+                KCore.Diagnostic.Error(R.ID, LOG, id, ex.Message);
 
                 throw new KDBException(LOG, C.MessageEx.ErrorDabaseConnection2_2, $"{DataInfo.URL()}", ex.Message);
             }
@@ -186,8 +186,8 @@ namespace K.DB.Clients
 
             if (Cursor > limit && limit > 0)
             {
-                var id = K.Core.Diagnostic.Track(LOG, LastCommand);
-                K.Core.Diagnostic.Warning(R.ID, LOG, id, $"The Query was limited to {limit} lines");
+                var id = KCore.Diagnostic.Track(LOG, LastCommand);
+                KCore.Diagnostic.Warning(R.ID, LOG, id, $"The Query was limited to {limit} lines");
 
                 DataReader.Close();
                 return false;
@@ -311,26 +311,26 @@ WHERE  TABLE_CATALOG = {0}
     public sealed partial class HanaClient
     {
         public static string LOG => typeof(HanaClient).Name;
-        public static K.Core.C.Database.ColumnType GetColumnType(string type)
+        public static KCore.C.Database.ColumnType GetColumnType(string type)
         {
             switch (type)
             {
-                case "nvarchar": return K.Core.C.Database.ColumnType.Text;
-                case "datetime": return K.Core.C.Database.ColumnType.DateTime;
-                case "int": return K.Core.C.Database.ColumnType.Number;
-                case "char": return Core.C.Database.ColumnType.Char;
+                case "nvarchar": return KCore.C.Database.ColumnType.Text;
+                case "datetime": return KCore.C.Database.ColumnType.DateTime;
+                case "int": return KCore.C.Database.ColumnType.Number;
+                case "char": return KCore.C.Database.ColumnType.Char;
                 default: throw new KDBException(LOG, C.MessageEx.FatalError1_1, type);
             }
         }
 
-        public static string GetColumnType(K.Core.C.Database.ColumnType type)
+        public static string GetColumnType(KCore.C.Database.ColumnType type)
         {
             switch (type)
             {
-                case K.Core.C.Database.ColumnType.Text: return "nvarchar";
-                case K.Core.C.Database.ColumnType.DateTime: return "datetime";
-                case K.Core.C.Database.ColumnType.Number: return "int";
-                case K.Core.C.Database.ColumnType.Char: return "char";
+                case KCore.C.Database.ColumnType.Text: return "nvarchar";
+                case KCore.C.Database.ColumnType.DateTime: return "datetime";
+                case KCore.C.Database.ColumnType.Number: return "int";
+                case KCore.C.Database.ColumnType.Char: return "char";
                 default: throw new KDBException(LOG, C.MessageEx.FatalError1_1, type);
             }
         }

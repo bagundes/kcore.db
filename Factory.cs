@@ -1,13 +1,13 @@
-﻿using K.Core;
-using K.Core.Base;
+﻿using KCore;
+using KCore.Base;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using K.DB.Scripts;
+using KCore.DB.Scripts;
 using System.Linq;
-using K.Core.Model;
+using KCore.Model;
 
-namespace K.DB
+namespace KCore.DB
 {
     public static partial class Factory
     {
@@ -25,7 +25,7 @@ namespace K.DB
         }
 
         [Obsolete("Temp")]
-        public static T[] LoadingArray<T>(string where = null, int limit = 1000) where T : K.Core.Base.BaseTable, new()
+        public static T[] LoadingArray<T>(string where = null, int limit = 1000) where T : KCore.Base.BaseTable, new()
         {
             var t = new T();
             var sql = $"SELECT TOP {limit} * FROM [{t.TabInfo.Table}]";
@@ -53,7 +53,7 @@ namespace K.DB
                         //var methodField = modelType.GetMethod("AddFields");
                         //methodField.Invoke(formClassObject, new object[] { fields });
 
-                        foreach (var proper in K.Core.Reflection.FilterOnlySetProperties(formClassObject))
+                        foreach (var proper in KCore.Reflection.FilterOnlySetProperties(formClassObject))
                         {
                             try
                             {
@@ -79,7 +79,7 @@ namespace K.DB
         }
 
 
-        public static K.Core.Model.DataInfo DataInfo
+        public static KCore.Model.DataInfo DataInfo
         {
             get
             {
@@ -104,14 +104,14 @@ namespace K.DB
         /// <param name="cred"></param>
         public static void SetClient(Credential2 cred)
         {
-            var dbtype = (K.Core.C.Database.ServerType) cred.GetProperty("DBType").ToInt();
-            K.Core.Base.IBaseClient client;
+            var dbtype = (KCore.C.Database.ServerType) cred.GetProperty("DBType").ToInt();
+            KCore.Base.IBaseClient client;
             switch (dbtype)
             {
-                case Core.C.Database.ServerType.Hana:
-                    client = new K.DB.Clients.HanaClient(); break;
-                case Core.C.Database.ServerType.MSQL:
-                    client = new K.DB.Clients.MSQLClient(); break;
+                case KCore.C.Database.ServerType.Hana:
+                    client = new KCore.DB.Clients.HanaClient(); break;
+                case KCore.C.Database.ServerType.MSQL:
+                    client = new KCore.DB.Clients.MSQLClient(); break;
                 default:
                     throw new NotImplementedException();
 
@@ -132,7 +132,7 @@ namespace K.DB
             };
         }
 
-        public static K.Core.C.Database.ServerType ServerType()
+        public static KCore.C.Database.ServerType ServerType()
         {
             using (var client = (IBaseClient)Activator.CreateInstance(__client, new object[] { true }))
             {
@@ -150,13 +150,13 @@ namespace K.DB
             /// <param name="values"></param>
             public static void Prepare(bool manipulation, ref string sql, params object[] values)
             {
-                K.DB.Scripts.MyTags.Namespace(ref sql);
+                KCore.DB.Scripts.MyTags.Namespace(ref sql);
                 using (var client = (IBaseClient)Activator.CreateInstance(__client, new object[] { true }))
                 {
                     switch (client.DataInfo.ServerType)
                     {
-                        case Core.C.Database.ServerType.MSQL: DB.Scripts.MSQLFix.Format(ref sql, values, manipulation); break;
-                        case Core.C.Database.ServerType.Hana: DB.Scripts.HanaFix.Format(ref sql, values, manipulation); break;
+                        case KCore.C.Database.ServerType.MSQL: DB.Scripts.MSQLFix.Format(ref sql, values, manipulation); break;
+                        case KCore.C.Database.ServerType.Hana: DB.Scripts.HanaFix.Format(ref sql, values, manipulation); break;
                         default: throw new NotImplementedException();
                     }
                 }
@@ -170,8 +170,8 @@ namespace K.DB
                 {
                     switch (client.DataInfo.ServerType)
                     {
-                        case Core.C.Database.ServerType.MSQL: DB.Scripts.MSQLFix.Top(limit, ref sql); break;
-                        case Core.C.Database.ServerType.Hana: DB.Scripts.HanaFix.Top(limit, ref sql); break;
+                        case KCore.C.Database.ServerType.MSQL: DB.Scripts.MSQLFix.Top(limit, ref sql); break;
+                        case KCore.C.Database.ServerType.Hana: DB.Scripts.HanaFix.Top(limit, ref sql); break;
                         default: throw new NotImplementedException();
                     }
                 }
@@ -183,7 +183,7 @@ namespace K.DB
                 {
                     switch (client.DataInfo.ServerType)
                     {
-                        case Core.C.Database.ServerType.MSQL: return new MSQLCreate(database, table, pkString);
+                        case KCore.C.Database.ServerType.MSQL: return new MSQLCreate(database, table, pkString);
                         default: throw new NotImplementedException();
                     }
                 }
@@ -197,8 +197,8 @@ namespace K.DB
                     {
                         switch (client.DataInfo.ServerType)
                         {
-                            case Core.C.Database.ServerType.MSQL: return new MSQLSelect();
-                            case Core.C.Database.ServerType.Hana: return new HanaSelect();
+                            case KCore.C.Database.ServerType.MSQL: return new MSQLSelect();
+                            case KCore.C.Database.ServerType.Hana: return new HanaSelect();
                             default: throw new NotImplementedException();
                         }
                     }
@@ -213,7 +213,7 @@ namespace K.DB
                     {
                         switch (client.DataInfo.ServerType)
                         {
-                            case Core.C.Database.ServerType.MSQL: return new MSQLInsert();
+                            case KCore.C.Database.ServerType.MSQL: return new MSQLInsert();
                             default: throw new NotImplementedException();
                         }
                     }
@@ -228,7 +228,7 @@ namespace K.DB
                     {
                         switch (client.DataInfo.ServerType)
                         {
-                            case Core.C.Database.ServerType.MSQL: return new MSQLUpdate();
+                            case KCore.C.Database.ServerType.MSQL: return new MSQLUpdate();
                             default: throw new NotImplementedException();
                         }
                     }
@@ -260,7 +260,7 @@ namespace K.DB
                 }
             }
 
-            public static bool Exists<T>(T model) where T : K.Core.Base.BaseTable
+            public static bool Exists<T>(T model) where T : KCore.Base.BaseTable
             {
                 using (var client = (IBaseClient)Activator.CreateInstance(__client, new object[] { true }))
                 {
@@ -369,7 +369,7 @@ namespace K.DB
 
             
 
-            public static T[] Models<T>() where T :K.Core.Base.BaseTable, new()
+            public static T[] Models<T>() where T :KCore.Base.BaseTable, new()
             {
                 var list = new List<T>();
                 var sql = Scripts.Select.ByPKey<T>();
@@ -395,7 +395,7 @@ namespace K.DB
                             object formClassObject = formConstructor.Invoke(new object[] { });
                             methodField.Invoke(formClassObject, new object[] { fields });
 
-                            foreach (var proper in K.Core.Reflection.GetFields(formClassObject))
+                            foreach (var proper in KCore.Reflection.GetFields(formClassObject))
                             {
                                 var value = fields.Where(c => c.Key.Equals(proper.Name, StringComparison.OrdinalIgnoreCase)).Select(v => v.Value.Value).FirstOrDefault();
 
@@ -430,7 +430,7 @@ namespace K.DB
                 }
             }
 
-            public static T Model<T>(params dynamic[] pks) where T :K.Core.Base.BaseTable, new()
+            public static T Model<T>(params dynamic[] pks) where T :KCore.Base.BaseTable, new()
             {
                 var t = new T();
                 var sql = Scripts.Select.ByPKey<T>(pks);
@@ -454,7 +454,7 @@ namespace K.DB
                             var methodField = modelType.GetMethod("QFields");
                             methodField.Invoke(formClassObject, new object[] { fields });
 
-                            foreach (var proper in K.Core.Reflection.GetFields(formClassObject))
+                            foreach (var proper in KCore.Reflection.GetFields(formClassObject))
                             {
                                 var value = fields.Where(c => c.Key.Equals(proper.Name, StringComparison.OrdinalIgnoreCase)).Select(v => v.Value.Value).FirstOrDefault();
 
@@ -475,15 +475,15 @@ namespace K.DB
                 }
             }
 
-            public static T Model<T>(Func<T, dynamic> selector) where T :K.Core.Base.BaseTable, new()
+            public static T Model<T>(Func<T, dynamic> selector) where T :KCore.Base.BaseTable, new()
             {
                 throw new NotImplementedException();
 
                 //return new T();
-                foreach (var foo in K.Core.Reflection.GetMembers(selector.Target))
+                foreach (var foo in KCore.Reflection.GetMembers(selector.Target))
                 {
                     //var bar = foo.Name;
-                    var foobar = K.Core.Reflection.GetMember(selector.Target, foo.Name);
+                    var foobar = KCore.Reflection.GetMember(selector.Target, foo.Name);
                     var bar = foobar.ToString();
                 }
 
@@ -494,7 +494,7 @@ namespace K.DB
                 return new T();
             }
 
-            public static Core.Model.Select[] SelectModel(int limit, string sql, params dynamic[] values)
+            public static KCore.Model.Select[] SelectModel(int limit, string sql, params dynamic[] values)
             {
                 var commander = String.Empty;
 
@@ -506,13 +506,13 @@ namespace K.DB
                             Scripts.Top(limit, ref sql);
 
                         client.DoQuery(sql, values);
-                        var selects = new List<Core.Model.Select>();
+                        var selects = new List<KCore.Model.Select>();
                         while (client.Next(limit))
                         {
                             if (client.FieldCount > 1)
-                                selects.Add(new Core.Model.Select(client.Field(0).Value, client.Field(1).ToString()));
+                                selects.Add(new KCore.Model.Select(client.Field(0).Value, client.Field(1).ToString()));
                             else
-                                selects.Add(new Core.Model.Select(client.Field(0).Value));
+                                selects.Add(new KCore.Model.Select(client.Field(0).Value));
                         }
 
                         return selects.ToArray();
@@ -563,7 +563,7 @@ namespace K.DB
                 }
             }
 
-            public static T[] Top<T>(Func<T, object> p) where T : K.Core.Base.BaseTable
+            public static T[] Top<T>(Func<T, object> p) where T : KCore.Base.BaseTable
             {
                 
 
@@ -583,7 +583,7 @@ namespace K.DB
             /// <param name="sql">Query</param>
             /// <param name="values">Params of query</param>
             /// <returns></returns>
-            public static Core.Model.Select2[] SelectModel(int limit, string dbase, string sql, params dynamic[] values)
+            public static KCore.Model.Select2[] SelectModel(int limit, string dbase, string sql, params dynamic[] values)
             {
                 var commander = String.Empty;
 
@@ -602,13 +602,13 @@ namespace K.DB
                             Scripts.Top(limit, ref sql);
 
                         client.DoQuery(sql, values);
-                        var selects = new List<Core.Model.Select2>();
+                        var selects = new List<KCore.Model.Select2>();
                         while (client.Next(limit))
                         {
                             if (client.FieldCount > 1)
-                                selects.Add(new Core.Model.Select2(client.Field(0).Value, client.Field(1).ToString()));
+                                selects.Add(new KCore.Model.Select2(client.Field(0).Value, client.Field(1).ToString()));
                             else
-                                selects.Add(new Core.Model.Select2(client.Field(0).Value));
+                                selects.Add(new KCore.Model.Select2(client.Field(0).Value));
                         }
 
                         return selects.ToArray();
@@ -719,7 +719,7 @@ namespace K.DB
             /// <param name="sql">Query</param>
             /// <param name="values">Parameters of query</param>
             /// <returns></returns>
-            public static K.Core.Dynamic Get(string dbase, string sql, params dynamic[] values)
+            public static KCore.Dynamic Get(string dbase, string sql, params dynamic[] values)
             {
                 var auto = String.IsNullOrEmpty(dbase);
 
@@ -772,7 +772,7 @@ namespace K.DB
         }
         public static class Save
         {
-            public static dynamic[] Set<T>(T model) where T : K.Core.Base.BaseTable
+            public static dynamic[] Set<T>(T model) where T : KCore.Base.BaseTable
             {
                 var exists = Factory.Result.Exists(model);
 
@@ -835,7 +835,7 @@ namespace K.DB
         //            {
         //                if (!client.HasDatabase(database))
         //                {
-        //                    var sql = K.DB.Scripts.SQL1.CreateDatebase(client.DataInfo.ServerType, database);
+        //                    var sql = KCore.DB.Scripts.SQL1.CreateDatebase(client.DataInfo.ServerType, database);
         //                    return client.NoQuery(sql);
         //                }
         //                else
@@ -858,7 +858,7 @@ namespace K.DB
         //            {
         //                if (!client.HasTable(database, table))
         //                {
-        //                    var sql = K.DB.Scripts.SQL1.CreateTable(client.DataInfo.ServerType, database, table, pkString);
+        //                    var sql = KCore.DB.Scripts.SQL1.CreateTable(client.DataInfo.ServerType, database, table, pkString);
         //                    return client.NoQuery(sql);
         //                }
         //                else
@@ -873,7 +873,7 @@ namespace K.DB
         //        }
         //    }
 
-        //    public static bool Column(string database, string table, string colName, Core.C.Database.ColumnType colType, bool request = false, int size = -1)
+        //    public static bool Column(string database, string table, string colName, KCore.C.Database.ColumnType colType, bool request = false, int size = -1)
         //    {
         //        using (var client = (IBaseClient)Activator.CreateInstance(__client, new object[] { true }))
         //        {
@@ -881,7 +881,7 @@ namespace K.DB
         //            {
         //                if (!client.HasColumn(database, table, colName))
         //                {
-        //                    var sql = K.DB.Scripts.SQL1.AddColumn(client.DataInfo.ServerType, database, table, colName, colType, request, size);
+        //                    var sql = KCore.DB.Scripts.SQL1.AddColumn(client.DataInfo.ServerType, database, table, colName, colType, request, size);
         //                    return client.NoQuery(sql);
         //                }
         //                else

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace K.DB.Model
+namespace KCore.DB.Model
 {
-    public sealed class AttributeTable : K.DB.Base.InternalCodeTable
+    public sealed class AttributeTable : KCore.DB.Base.InternalCodeTable
     {
 
         public string Code => $"{TabInfo.DataSource}.{table}.{column}";
@@ -14,11 +14,11 @@ namespace K.DB.Model
         public string description;
         public string formatString;
         public char typeID;
-        public K.Core.C.Database.TypeID TypeID
+        public KCore.C.Database.TypeID TypeID
         {
             get
             {
-                return (K.Core.C.Database.TypeID)typeID;
+                return (KCore.C.Database.TypeID)typeID;
             }
             set
             {

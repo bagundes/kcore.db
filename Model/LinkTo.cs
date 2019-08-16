@@ -1,13 +1,13 @@
 ﻿using System.Linq;
 
-namespace K.DB.Model
+namespace KCore.DB.Model
 {
-    public sealed class LinkTo : K.Core.Base.BaseModel
+    public sealed class LinkTo : KCore.Base.BaseModel
     {
-        public int Id => K.Core.Security.Hash.Id(Display);
+        public int Id => KCore.Security.Hash.Id(Display);
         public C.LinkTo.Type Type { get; set; }
         public string Value { get; set; }
-        public K.Core.Model.Select[] Parameters { get; set; }
+        public KCore.Model.Select[] Parameters { get; set; }
         public string Display { get; set; }
         public C.LinkTo.OpenAs OpenAs { get; set; }
 

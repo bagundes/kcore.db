@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace K.DB
+namespace KCore.DB
 {
     public static class C
     {

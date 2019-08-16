@@ -1,23 +1,23 @@
-﻿using K.DB.Base;
+﻿using KCore.DB.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace K.DB.Scripts
+namespace KCore.DB.Scripts
 {
     public class MSQLUpdate : IUpdate
     {
-        public string Model<T>(T model) where T : K.Core.Base.BaseTable
+        public string Model<T>(T model) where T : KCore.Base.BaseTable
         {
-            var res = K.DB.Factory.Result.Top(1, (new MSQLSelect()).ByPKey(model));
+            var res = KCore.DB.Factory.Result.Top(1, (new MSQLSelect()).ByPKey(model));
             var columns = new List<String>();
             var data = new List<dynamic>();
 
             data.Add(DateTime.Now);
             columns.Add("[Updated]  = {" + columns.Count + "}");
 
-            foreach (var p in K.Core.Reflection.FilterOnlySetProperties(model))
+            foreach (var p in KCore.Reflection.FilterOnlySetProperties(model))
             {
 
                 var value = p.GetValue(model) ?? String.Empty;

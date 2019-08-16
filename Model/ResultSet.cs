@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace K.DB.Model
+namespace KCore.DB.Model
 {
     public class ResultSet
     {
@@ -23,7 +23,7 @@ namespace K.DB.Model
         /// <summary>
         /// Result["Column"][line]
         /// </summary>
-        private Dictionary<string, List<Core.Dynamic>> Array = new Dictionary<string, List<Core.Dynamic>>();
+        private Dictionary<string, List<KCore.Dynamic>> Array = new Dictionary<string, List<KCore.Dynamic>>();
 
         public dynamic this[string column, int line]
         { get
@@ -67,7 +67,7 @@ namespace K.DB.Model
                 var lastLine = Array[column].Count;
                 if (lastLine > line)
                 {
-                    if(value.GetType().Equals(typeof(Core.Dynamic)))
+                    if(value.GetType().Equals(typeof(KCore.Dynamic)))
                         Array[column][line] = value;
                     else
                         Array[column][line] = $"Object:{value.GetType()}";
@@ -75,7 +75,7 @@ namespace K.DB.Model
 
                 else
                 {
-                    if (value.GetType().Equals(typeof(Core.Dynamic)))
+                    if (value.GetType().Equals(typeof(KCore.Dynamic)))
                         Array[column].Add(value);
                     else
                         Array[column].Add($"Object:{value.GetType()}");
@@ -83,17 +83,17 @@ namespace K.DB.Model
                     
             } else
             {
-                var foo = new List<Core.Dynamic>();
+                var foo = new List<KCore.Dynamic>();
                 
-                foo.Add(new Core.Dynamic(value));
+                foo.Add(new KCore.Dynamic(value));
                 Array.Add(column, foo);
             }
 
         }
 
-        public K.Core.Model.Select[] ToSelect(bool encrypt = false)
+        public KCore.Model.Select[] ToSelect(bool encrypt = false)
         {
-            var select = new List<K.Core.Model.Select>();
+            var select = new List<KCore.Model.Select>();
             
 
 
@@ -102,7 +102,7 @@ namespace K.DB.Model
                 var value = line.Columns[0].Value;
                 var text = line.Columns.Count > 1 ? line.Columns[1].Value : value;                
 
-                select.Add(new K.Core.Model.Select(value, text, encrypt));
+                select.Add(new KCore.Model.Select(value, text, encrypt));
             }
 
             return select.ToArray();
@@ -191,7 +191,7 @@ namespace K.DB.Model
         public dynamic Value;
         public string Type;
 
-        public Column(string column, Core.Dynamic value, string type)
+        public Column(string column, KCore.Dynamic value, string type)
         {
             Name = column;
             Value = value.Value;

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace K.DB.Content {
+namespace KCore.DB.Content {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace K.DB.Content {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("K.DB.Content.queries_general", typeof(queries_general).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("KCore.DB.Content.queries_general", typeof(queries_general).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

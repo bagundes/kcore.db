@@ -1,9 +1,9 @@
-﻿using K.Core;
+﻿using KCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace K.DB.Scripts
+namespace KCore.DB.Scripts
 {
     public static class HanaFix
     {

@@ -1,16 +1,16 @@
-﻿using K.Core;
-using K.Core.Base;
-using K.Core.Model;
-using K.DB;
+﻿using KCore;
+using KCore.Base;
+using KCore.Model;
+using KCore.DB;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 
-namespace K.DB.Scripts
+namespace KCore.DB.Scripts
 {
-    public class MSQLCreate : K.Core.Base.BaseClass, ICreate
+    public class MSQLCreate : KCore.Base.BaseClass, ICreate
     {
         private string database;
         private string table;
@@ -22,24 +22,24 @@ namespace K.DB.Scripts
             this.table = table;
 
             var col = pkString ? "Code" : "ID";
-            var colType = pkString ? Core.C.Database.ColumnType.Text : Core.C.Database.ColumnType.Number;
+            var colType = pkString ? KCore.C.Database.ColumnType.Text : KCore.C.Database.ColumnType.Number;
             AddColumnRequere(col, colType, null, 500);
-            AddColumnRequere("ObjClass", Core.C.Database.ColumnType.Text, "none", 100);
+            AddColumnRequere("ObjClass", KCore.C.Database.ColumnType.Text, "none", 100);
             ConstraintPK(col);
 
         }
 
-        //public void AddColumn(string colName, Core.C.Database.ColumnType colType, bool request, int? size = null)
+        //public void AddColumn(string colName, KCore.C.Database.ColumnType colType, bool request, int? size = null)
         //{
         //    columns.Add(new ColumnStruct(database, table, colName, colType, request, null, size));
         //}
 
-        public void AddColumnNoRequere(string colName, Core.C.Database.ColumnType colType, dynamic def = null, int? size = null)
+        public void AddColumnNoRequere(string colName, KCore.C.Database.ColumnType colType, dynamic def = null, int? size = null)
         {
             columns.Add(new ColumnStruct(database, table, colName, colType, false, def, size));
         }
 
-        public void AddColumnRequere(string colName, Core.C.Database.ColumnType colType, dynamic def = null, int? size = null)
+        public void AddColumnRequere(string colName, KCore.C.Database.ColumnType colType, dynamic def = null, int? size = null)
         {
             columns.Add(new ColumnStruct(database, table, colName, colType, true, def, size));
         }
@@ -54,8 +54,8 @@ namespace K.DB.Scripts
             if (pkeys.Count < 1)
                 ConstraintPK(columns[0].Name);
 
-            AddColumnRequere("Created", Core.C.Database.ColumnType.DateTime);
-            AddColumnRequere("Updated", Core.C.Database.ColumnType.DateTime);
+            AddColumnRequere("Created", KCore.C.Database.ColumnType.DateTime);
+            AddColumnRequere("Updated", KCore.C.Database.ColumnType.DateTime);
 
             using (var client = (IBaseClient)Activator.CreateInstance(Factory.__client, new object[] { true }))
             {
@@ -113,7 +113,7 @@ namespace K.DB.Scripts
 
             var command = String.Empty;
 
-            if(colStrunct.ColType == Core.C.Database.ColumnType.Text)
+            if(colStrunct.ColType == KCore.C.Database.ColumnType.Text)
                 command = $@" [{colStrunct.Name}] {Clients.MSQLClient.GetColumnType(colStrunct.ColType)}({colStrunct.Size}) {(required ? "not" : "")} null";
             else
                 command = $@" [{colStrunct.Name}] {Clients.MSQLClient.GetColumnType(colStrunct.ColType)} {(required ? "not" : "")} null";

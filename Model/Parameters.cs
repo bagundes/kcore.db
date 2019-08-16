@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace K.DB.Model
+namespace KCore.DB.Model
 {
     public class Parameters
     {
