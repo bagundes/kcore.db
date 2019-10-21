@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace KCore.DB
 {
@@ -10,15 +8,14 @@ namespace KCore.DB
         public static KCore.Dynamic Get(int code, string dbase, string name, string var1, string var2, string var3, dynamic @default)
         {
 
-            var hvar1 = String.IsNullOrEmpty(var1) ? "--" : "";
-            var hvar2 = String.IsNullOrEmpty(var2) ? "--" : "";
-            var hvar3 = String.IsNullOrEmpty(var3) ? "--" : "";
+            var hvar1 = String.IsNullOrEmpty(var1) ? "--" : "!-";
+            var hvar2 = String.IsNullOrEmpty(var2) ? "--" : "!-";
+            var hvar3 = String.IsNullOrEmpty(var3) ? "--" : "!-";
 
-            var sql = Content.queries_general.PARAM_GETVALUE_6_DBase_Name_Var123_BplId;
+            var sql = Content.queries_general.TSPARAM0001_DBase_Name_Var123_BplId;
 
-
-            sql = String.Format(sql,
-                Factory.DataInfo.Schema,
+            var res = KCore.DB.Factory.Result.Get(dbase,
+                sql,
                 code,
                 name,
                 var1,
@@ -27,9 +24,7 @@ namespace KCore.DB
                 hvar1,
                 hvar2,
                 hvar3);
-
-            var res = Factory.Result2.Get(dbase, sql);
-            if (res != null)
+            if (!res.IsEmpty())
                 return res;
             else
                 return KCore.Dynamic.From(@default);
@@ -45,8 +40,11 @@ namespace KCore.DB
             return Get(code, dbase, name, null, null, null, @default);
         }
 
-        public static void AddProject(int code, string nspace, string name)
+        public static void Set(Model.Parameters param)
         {
+            //var foo = param;
+            //KCore.DB.Factory.Models.Set(ref foo);
+
             throw new NotImplementedException();
             /**
              * INSERT INTO [{0}]..[@TS_PARAM0] (

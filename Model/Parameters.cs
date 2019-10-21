@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KCore.DB.Model
+﻿namespace KCore.DB.Model
 {
     public class Parameters
     {

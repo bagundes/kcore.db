@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KCore.DB.Scripts
+﻿namespace KCore.DB.Scripts
 {
     public interface ICreate
     {

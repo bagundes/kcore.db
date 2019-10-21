@@ -1,11 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KCore.DB
+﻿namespace KCore.DB
 {
     public static class C
     {
+        public static class SQLSyntax
+        {
+            public const string CommentedLine = "--";
+            public const string UncommentedLine = "!-";
+            public const string TextValue = "N";
+            public const string CommentMSQL = "/*msql*/";
+            public const string CommentHana = "/*hana*/";
+        }
+
         internal static class Tags
         {
             #region Tag to change the Namespace company @!!

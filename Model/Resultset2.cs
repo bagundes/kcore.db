@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
 
 namespace KCore.DB.Model
 {
@@ -13,8 +11,7 @@ namespace KCore.DB.Model
     {
         public List<Data> Columns { get; private set; } = new List<Data>();
         public List<Line> Lines { get; private set; } = new List<Line>();
-
-
+        
         /// <summary>
         /// Information about the result and header
         /// </summary>
@@ -29,8 +26,7 @@ namespace KCore.DB.Model
             this.Property.SpecialTag = C.Tags.SPECIAL_TAG.ToLower();
         }
 
-
-
+        #region Column
         public void AddColumn(Data data)
         {
             if (data.value is null)
@@ -50,25 +46,27 @@ namespace KCore.DB.Model
             String tag;
 
             // Update the column display
-            if(display == null)
-                display = Stored.Cache.AttributesValues.Where(t => t.code == $"{source}.{column}".ToLower()).Select(t => t.description).FirstOrDefault() ?? column;
+            //if (display == null)
+            //    display = Stored.Cache.AttributesValues.Where(t => t.code == $"{source}.{column}".ToLower()).Select(t => t.description).FirstOrDefault() ?? column;
 
 
-            var sptag = Scripts.MyTags.HasSpecialTag(column, out columName, out tag);
+            var sptag = Factory.MyTags.HasSpecialTag(column, out columName, out tag);
 
-            if(sptag)
+            if (sptag)
             {
                 display = columName;
                 Property.SpecialTag = tag;
             }
 
             var name = column;
-            var index = $"{(sptag ? tag : "col" ) }{(Columns.Count() + 1).ToString("000")}";
+            var index = $"{(sptag ? tag : "col") }{(Columns.Count() + 1).ToString("000")}";
             display = display ?? column;
 
             Columns.Add(new Data(index, name, display, sptag));
         }
+        #endregion
 
+        #region Data
         public void AddData(Data data)
         {
             AddData(data.index, data.value, data.display);
@@ -82,14 +80,14 @@ namespace KCore.DB.Model
         public void AddData(string column, dynamic data, string display = null)
         {
             poscol++;
-            
-            var foo = Stored.Cache.AttributesValues.Where(t => t.code == $"{source}.{column}".ToLower()).FirstOrDefault();
 
+            //var foo = Stored.Cache.AttributesValues.Where(t => t.code == $"{source}.{column}".ToLower()).FirstOrDefault();
+            AttributeTable foo = null;
 
             // Is it a special field?
-            if(Property.HasSpecialTag && Columns.Where(t => t.value == column && t.specialTag).Any())
-            { 
-                var linkto = Scripts.MyTags.LinkTo(data);
+            if (Property.HasSpecialTag && Columns.Where(t => t.value == column && t.specialTag).Any())
+            {
+                var linkto = Factory.MyTags.LinkTo(data);
 
                 if (linkto != null)
                 {
@@ -127,13 +125,15 @@ namespace KCore.DB.Model
                     var line = new Line();
                     line.Data.Add(new Data($"col{(poscol).ToString("000")}", data, display, false));
                     Lines.Add(line);
-                } else
+                }
+                else
                 {
                     var p = Lines.Count;
                     Lines[p - 1].Data.Add(new Data($"col{(poscol).ToString("000")}", data, display, false));
                 }
             }
         }
+        #endregion
 
         /// <summary>
         /// Format display info
@@ -181,15 +181,17 @@ namespace KCore.DB.Model
                     {
                         result2.AddColumn(Columns[col]);
                         continue;
-                    } else if (col == 0 && line >= 0)
+                    }
+                    else if (col == 0 && line >= 0)
                     {
                         result2.AddColumn(Lines[line].Data[col]);
                         continue;
                     }
-                        else if (line == -1)
+                    else if (line == -1)
                     {
                         result2.AddData(Columns[col]);
-                    } else
+                    }
+                    else
                     {
                         result2.AddData(Lines[line].Data[col]);
                     }
@@ -216,7 +218,7 @@ namespace KCore.DB.Model
             //            result2.AddColumn(Lines[y].Data[x]); //result2.AddColumn(Lines[y].Data[x].value, Lines[y].Data[x].display);
             //        else
             //            result2.AddData(Lines[y].Data[x]); //result2.AddData(Lines[y].Data[x].value, Lines[y].Data[x].value, Lines[y].Data[x].display);
-                    
+
             //    }                
             //}
 
@@ -227,7 +229,9 @@ namespace KCore.DB.Model
         public object Response()
         {
             string tag = !Property.HasSpecialTag ? String.Empty : Property.SpecialTag;
-            var properties = new { specialtag = tag,
+            var properties = new
+            {
+                specialtag = tag,
                 title = Property.Title,
                 swtch = new { title = Property.Switch.title, enabled = Property.Switch.transfor },
                 search = Property.Search
@@ -246,8 +250,8 @@ namespace KCore.DB.Model
                 var value = ((string)col.display).StartsWith(tag, StringComparison.OrdinalIgnoreCase) ? ((string)col.display).Substring(tag.Length) : ((string)col.display);
                 cols.Add(name, value);
             }
-            
-            
+
+
             for (int i = 0; i < Lines.Count; i++)
             {
                 var line = new Dictionary<string, object>();
@@ -324,17 +328,17 @@ namespace KCore.DB.Model
             var lines = new List<string>();
 
             // fix
-            switch(delimited)
+            switch (delimited)
             {
                 case "\\t": delimited = "\t"; break;
                 case "\\n": delimited = "\n"; break;
             }
 
 
-            foreach(var line in Lines)
+            foreach (var line in Lines)
             {
                 var val = String.Empty;
-                foreach(var data in line.Data)
+                foreach (var data in line.Data)
                     val += $"{data.value}{delimited}";
 
                 lines.Add(val.Substring(0, val.Length - delimited.Length));

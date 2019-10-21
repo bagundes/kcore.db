@@ -70,29 +70,6 @@ namespace KCore.DB.Content {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT	 C.TABLE_CATALOG	as &apos;DBase&apos;
-        ///		,C.TABLE_NAME		as &apos;Table&apos;
-        ///		,C.COLUMN_NAME		as &apos;Name&apos;
-        ///		,CASE WHEN U.COLUMN_NAME IS NULL THEN 0 ELSE 1 END
-        ///							as &apos;PK&apos;
-        ///		,C.CHARACTER_MAXIMUM_LENGTH
-        ///							as &apos;Size&apos;
-        ///		,CASE C.IS_NULLABLE WHEN &apos;YES&apos; THEN 1 ELSE 0 END
-        ///							as &apos;Request&apos;
-        ///		,DATA_TYPE			as &apos;Type&apos;
-        ///FROM	 Teamsoft.INFORMATION_SCHEMA.COLUMNS C
-        ///LEFT JOIN Teamsoft.INFORMATION_SCHEMA.KEY_COLUMN_USAGE U
-        ///	ON	 C.TABLE_CATALOG = U.TABLE_CATALOG
-        ///	AND	 C.TABLE_NAME = U.TABLE_NAME
-        ///	AND	 C.COLUMN_NAME =  [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string LOCAL_COLUMNS_4_DBASE_TABLE {
-            get {
-                return ResourceManager.GetString("LOCAL_COLUMNS_4_DBASE,TABLE", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to SELECT TOP 1 Description, TypeID FROM Teamsoft..ResultSet WHERE code LIKE &apos;{0}&apos;.
         /// </summary>
         internal static string LOCAL_RESULTSETINFO_1_CODE {
@@ -141,21 +118,22 @@ namespace KCore.DB.Content {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SELECT	 U_VALUE
-        ///FROM	 [{0}]..[@TS_PARAM1]
-        ///WHERE	 Code = &apos;{1}&apos;
-        ///	AND	 U_Name = &apos;{2}&apos;
-        ///{6}	AND	 U_VAR1 = &apos;{3}&apos;
-        ///{7}	AND	 U_VAR2 = &apos;{4}&apos;
-        ///{8}	AND	 U_VAR3 = &apos;{5}&apos;
-        ///	AND	 U_BPLID IS NULL
-        ///	AND	 ( U_DUEDATE &gt;= CAST(GETDATE() as date)
-        ///		OR U_DUEDATE IS NULL)
+        ///   Looks up a localized string similar to SELECT	 &quot;U_VALUE&quot;
+        ///FROM	 &quot;@TS_PARAM1&quot;
+        ///WHERE	 &quot;Code&quot; = {0}
+        ///	AND	 &quot;U_Name&quot; = {1}
+        ///{5}	AND	 &quot;U_VAR1&quot; = {2}
+        ///{6}	AND	 &quot;U_VAR2&quot; = {3}
+        ///{7}	AND	 &quot;U_VAR3&quot; = {4}
+        ///	AND	 &quot;U_BPLID&quot; IS NULL
+        ////*msql*/	AND	 ( &quot;U_DUEDATE&quot; &gt;= CAST(GETDATE() as date)
+        ////*hana*/	AND	 ( &quot;U_DUEDATE&quot; &gt;= CURRENT_DATE)
+        ///		OR &quot;U_DUEDATE&quot; IS NULL)
         ///ORDER BY U_ORDER asc.
         /// </summary>
-        internal static string PARAM_GETVALUE_6_DBase_Name_Var123_BplId {
+        internal static string TSPARAM0001_DBase_Name_Var123_BplId {
             get {
-                return ResourceManager.GetString("PARAM_GETVALUE_6_DBase,Name,Var123,BplId", resourceCulture);
+                return ResourceManager.GetString("TSPARAM0001_DBase,Name,Var123,BplId", resourceCulture);
             }
         }
     }

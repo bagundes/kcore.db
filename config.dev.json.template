@@ -1,0 +1,15 @@
+{
+  "DBConnect": "", // Inform what databases will connect in the portal
+  "DBPasswd": "", // User password
+  "DBPort": "", // Port: default Hana - 30015 and MSSQL - 1433
+  "DBHost": "", // Host where the database is installed		
+  "DBType": "", // The options: Hana/MSQL
+  "DBUser": "", // User name
+  "SAPLicense": "",
+  "QueryManager": "TS_EQM%", // The application will create the file with query manager name starting TS_EQM
+  "support": "/3Tt",
+  "JWT_SECRET_KEY": "",
+  "JWT_AUDIENCE_TOKEN": "https://localhost:44300/",
+  "JWT_ISSUER_TOKEN": "https://localhost:44300/",
+  "JWT_EXPIRE_MINUTES":  120,
+}

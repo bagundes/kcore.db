@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Resources;
-using System.Text;
 
 namespace KCore.DB
 {
     public static class R
     {
+
         public static string ParamDB = "teamsoft";
 
         private static System.Reflection.Assembly Assembly => System.Reflection.Assembly.GetExecutingAssembly();
@@ -28,15 +27,15 @@ namespace KCore.DB
         public static class Project
         {
             public static string Language => R.Language;
-            public static string Name => "Kv2";
-            public static string Namespace => "KV";
+            public static string Name => "KCore Database extension";
+            public static string Namespace => "KC";
             public static Version Version => R.Assembly.GetName().Version;
             public static int ID => Version.Major;
         }
         public static class Security
         {
             public static string MasterKey => KCore.R.Security.MasterKey;
-            public const int Expire = KCore.R.Security.Expire;
-        }        
+            public static int Expire = KCore.R.Security.Expire;
+        }
     }
 }

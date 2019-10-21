@@ -6,20 +6,29 @@
     <Platforms>AnyCPU;x86</Platforms>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>KCore.DB_bfagundes</PackageId>
-    <Version>1002.1.0.0</Version>
+    <Version>1.2.0</Version>
     <Authors>Bruno de Lima Fagundes</Authors>
     <Company />
     <Product>K Database Library</Product>
+    <AssemblyVersion>1002.1.2.0</AssemblyVersion>
+    <FileVersion>1002.1.2.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
-    <PackageReference Include="System.Data.Odbc" Version="4.5.0" />
-    <PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
+    <None Remove="config.dev.json" />
+    <None Remove="config.dev.json.template" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\KCore.core\KCore.csproj" />
+    <Content Include="config.dev.json.template" />
+    <Content Include="config.dev.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="KCore_bfagundes" Version="2.3.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.Data.Odbc" Version="4.5.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,6 +53,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>queries_general.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
 
 </Project>

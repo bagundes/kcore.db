@@ -1,14 +1,11 @@
-﻿using KCore.DB.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace KCore.DB.Scripts
 {
     public class MSQLInsert : IInsert
     {
-        public string Model<T>(T table, out dynamic[] pks) where T : KCore.Base.BaseTable
+        public string Model<T>(T table, out dynamic[] pks) where T : KCore.Base.BaseTable_v1
         {
             var pks1 = new List<dynamic>();
             var columns = new List<String>();
@@ -16,14 +13,19 @@ namespace KCore.DB.Scripts
             var data = new List<dynamic>();
             var hash = KCore.Security.Hash.MD5(DateTime.Now);
 
-            foreach (var col in DB.Properties.Columns.ColumnsList(table))
+            foreach (var col in DB.Factory.Properties.Column.GetList(table))
             {
                 var value = KCore.Reflection.GetValue(table, col.Name);
 
-                // Primary Key
-                if (value == null && col.PK && table.TabInfo.AutoIncrement)
+                // Fix - When field is DocEntry
+                if(col.Name.ToUpper() == "DOCENTRY" )
                 {
-                    var ai = KCore.DB.Factory.Result.First($"SELECT MAX({col}) FROM [{table.TabInfo.Table}]");
+                    value = KCore.DB.Factory.Result.Get(table.TableInfo.DBase,$"SELECT MAX({col.Name}) FROM [{table.TableInfo.Name}]").ToInt(0) + 1;
+                    KCore.Reflection.SetValue(table, col.Name, (int)value);
+                }
+                else if (value == null && col.PK /*&& table.TableInfo.AutoIncrement*/)
+                {
+                    var ai = KCore.DB.Factory_v1.Result.First($"SELECT MAX({col}) FROM [{table.TableInfo.Name}]");
                     string bar;
                     if (ai.IsEmpty())
                         bar = "1";
@@ -46,28 +48,28 @@ namespace KCore.DB.Scripts
             }
 
             // Created date
-            data.Add(DateTime.Now);
-            columns.Add($"[Created]");
-            foo.Add("{" + (foo.Count) + "}");
+            //data.Add(DateTime.Now);
+            //columns.Add($"[Created]");
+            //foo.Add("{" + (foo.Count) + "}");
 
             // Add ObjectClass
-            var foobar = KCore.Reflection.HasPropertyOrField(table, "ObjClass");
-            if(foobar > 0)
-            {
-                data.Add(KCore.Reflection.GetValue(table, "ObjClass"));
-                columns.Add($"[ObjClass]");
-                foo.Add("{" + (foo.Count) + "}");
-            }
+            //var foobar = KCore.Reflection.HasPropertyOrField(table, "ObjClass");
+            //if (foobar > 0)
+            //{
+            //    data.Add(KCore.Reflection.GetValue(table, "ObjClass"));
+            //    columns.Add($"[ObjClass]");
+            //    foo.Add("{" + (foo.Count) + "}");
+            //}
 
 
 
 
             var sql = $@"
-INSERT INTO [{table.TabInfo.DataSource}]..[{table.TabInfo.Table}] 
+INSERT INTO [{table.TableInfo.Name}] 
 ({String.Join(",", columns.ToArray())}) 
 VALUES  ({String.Join(",", foo.ToArray())})";
 
-            Factory.Scripts.Prepare(false, ref sql, data.ToArray());
+            Factory_v1.Scripts.Prepare(KCore.C.Database.DBaseType.MSQL, false, ref sql, data.ToArray());
             pks = pks1.Count > 0 ? pks1.ToArray() : null;
             return sql;
         }

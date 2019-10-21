@@ -120,25 +120,6 @@
   <data name="INF_COLUMNS_2_SCHEMA,TABLE" xml:space="preserve">
     <value>SELECT COLUMN_NAME FROM {0}.INFORMATION_SCHEMA.COLUMNS WHERE   TABLE_NAME = {1}</value>
   </data>
-  <data name="LOCAL_COLUMNS_4_DBASE,TABLE" xml:space="preserve">
-    <value>SELECT	 C.TABLE_CATALOG	as 'DBase'
-		,C.TABLE_NAME		as 'Table'
-		,C.COLUMN_NAME		as 'Name'
-		,CASE WHEN U.COLUMN_NAME IS NULL THEN 0 ELSE 1 END
-							as 'PK'
-		,C.CHARACTER_MAXIMUM_LENGTH
-							as 'Size'
-		,CASE C.IS_NULLABLE WHEN 'YES' THEN 1 ELSE 0 END
-							as 'Request'
-		,DATA_TYPE			as 'Type'
-FROM	 Teamsoft.INFORMATION_SCHEMA.COLUMNS C
-LEFT JOIN Teamsoft.INFORMATION_SCHEMA.KEY_COLUMN_USAGE U
-	ON	 C.TABLE_CATALOG = U.TABLE_CATALOG
-	AND	 C.TABLE_NAME = U.TABLE_NAME
-	AND	 C.COLUMN_NAME = U.COLUMN_NAME
-WHERE	 C.TABLE_CATALOG = {0}
-	AND	 C.TABLE_NAME = {1}</value>
-  </data>
   <data name="LOCAL_RESULTSETINFO_1_CODE" xml:space="preserve">
     <value>SELECT TOP 1 Description, TypeID FROM Teamsoft..ResultSet WHERE code LIKE '{0}'</value>
   </data>
@@ -169,17 +150,18 @@ VALUES (
 	,cast(getdate() as date)
 	,1300)</value>
   </data>
-  <data name="PARAM_GETVALUE_6_DBase,Name,Var123,BplId" xml:space="preserve">
-    <value>SELECT	 U_VALUE
-FROM	 [{0}]..[@TS_PARAM1]
-WHERE	 Code = '{1}'
-	AND	 U_Name = '{2}'
-{6}	AND	 U_VAR1 = '{3}'
-{7}	AND	 U_VAR2 = '{4}'
-{8}	AND	 U_VAR3 = '{5}'
-	AND	 U_BPLID IS NULL
-	AND	 ( U_DUEDATE &gt;= CAST(GETDATE() as date)
-		OR U_DUEDATE IS NULL)
+  <data name="TSPARAM0001_DBase,Name,Var123,BplId" xml:space="preserve">
+    <value>SELECT	 "U_VALUE"
+FROM	 "@TS_PARAM1"
+WHERE	 "Code" = {0}
+	AND	 "U_Name" = {1}
+{5}	AND	 "U_VAR1" = {2}
+{6}	AND	 "U_VAR2" = {3}
+{7}	AND	 "U_VAR3" = {4}
+	AND	 "U_BPLID" IS NULL
+/*msql*/	AND	 ( "U_DUEDATE" &gt;= CAST(GETDATE() as date)
+/*hana*/	AND	 ( "U_DUEDATE" &gt;= CURRENT_DATE)
+		OR "U_DUEDATE" IS NULL)
 ORDER BY U_ORDER asc</value>
     <comment>The query has special string format.</comment>
   </data>

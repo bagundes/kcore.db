@@ -2,11 +2,24 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace KCore.DB.Scripts
+namespace KCore.DB.Factory
 {
     public static class MyTags
     {
         private static string LOG => typeof(MyTags).Name;
+
+        public static void CommentLine(ref string sql, KCore.C.Database.DBaseType type)
+        {
+            switch (type)
+            {
+                case KCore.C.Database.DBaseType.Hana:
+                    sql = sql.Replace(C.SQLSyntax.CommentMSQL, "--"); break;
+                case KCore.C.Database.DBaseType.MSQL:
+                    sql = sql.Replace(C.SQLSyntax.CommentHana, "--"); break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
 
 
         /// <summary>
@@ -19,10 +32,10 @@ namespace KCore.DB.Scripts
             var tag = GetHeaderValue(C.Tags.NAMESPACE_NAME, ref val) ?? C.Tags.NAMESPACE_MARKS;
 
             val = val
-                .Replace($"U_{tag}", $"U_{KCore.R.Company.Namespace}")
-                .Replace($"U{tag}", $"U_{KCore.R.Company.Namespace}")
-                .Replace($"[{tag}]", $"U_{KCore.R.Company.Namespace}")
-                .Replace($"@{tag}", $"@{KCore.R.Company.Namespace}");
+                .Replace($"U_{tag}", $"U_{KCore.R.Company.Initials}")
+                .Replace($"U{tag}", $"U_{KCore.R.Company.Initials}")
+                .Replace($"[{tag}]", $"U_{KCore.R.Company.Initials}")
+                .Replace($"@{tag}", $"@{KCore.R.Company.Initials}");
 
             return tag;
         }
@@ -32,7 +45,8 @@ namespace KCore.DB.Scripts
         /// </summary>
         /// <param name="val"></param>
         /// <param name="dic"></param>
-        public static void InternalTag<T>(ref string val, T[] models) where T : KCore.Base.IBaseModel
+        [Obsolete]
+        public static void InternalTag1<T>(ref string val, T[] models) where T : KCore.Base.IBaseModel_v1
         {
             if (models == null || models.Length < 1)
                 return;
@@ -44,6 +58,22 @@ namespace KCore.DB.Scripts
             foreach (var model in models)
                 foreach (var value in model.ToSelect())
                     val = val.Replace($"{tagOpen}{value.Text}{tagClose}", value.Value == null ? "" : value.Value.ToString());
+
+
+        }
+
+        public static void InternalTag<T>(ref string val, T[] models) where T : KCore.Base.IBaseModel
+        {
+            if (models == null || models.Length < 1)
+                return;
+
+            var tagOpen = GetHeaderValue(C.Tags.INTERNAL_NAMEOPEN, ref val) ?? C.Tags.INTERNAL_OPEN;
+            // var tagSplit = GetHeaderValue(C.Tags.INTERNAL_NAMESPLIT, ref val) == null ? C.Tags.INTERNAL_SPLIT : GetHeaderValue(C.Tags.INTERNAL_NAMESPLIT, ref val)[0];
+            var tagClose = GetHeaderValue(C.Tags.INTERNAL_NAMECLOSE, ref val) ?? C.Tags.INTERNAL_CLOSE;
+
+            foreach (var model in models)
+                foreach (var value in model.ToSelect())
+                    val = val.Replace($"{tagOpen}{value.text}{tagClose}", value.value == null ? "" : value.value.ToString());
 
 
         }
@@ -62,11 +92,11 @@ namespace KCore.DB.Scripts
         /// </returns>
         public static int SAPParams(ref string sql, params dynamic[] values)
         {
-            
+
             var regex = new System.Text.RegularExpressions.Regex($@"\{C.Tags.SAP_OPEN}[0-9]\{C.Tags.SAP_CLOSE}");
             var count = regex.Matches(sql).Count;
 
-            for (int i = 0; i < values.Length && i < count; i++) 
+            for (int i = 0; i < values.Length && i < count; i++)
             {
                 var a = values[i];
                 sql = sql.Replace($"{C.Tags.SAP_OPEN}{i}{C.Tags.SAP_CLOSE}", a.ToString());
@@ -83,7 +113,7 @@ namespace KCore.DB.Scripts
                 sql = sql.Replace($"{C.Tags.SAP_OPEN}{i}{C.Tags.SAP_CLOSE}", values[i]);
         }
 
-        public static void SetQMParams(ref string sql, params KCore.Model.Select[] values)
+        public static void SetQMParams(ref string sql, params KCore.Model.Select_v1[] values)
         {
             for (int i = 0; i < values.Length; i++)
                 sql = sql.Replace($"{C.Tags.SAP_OPEN}{i}{C.Tags.SAP_CLOSE}", values[i].Value);
@@ -94,7 +124,7 @@ namespace KCore.DB.Scripts
         /// </summary>
         /// <param name="sql"></param>
         /// <returns></returns>
-        public static KCore.Model.Select[] GetQMParams(ref string sql)
+        public static KCore.Model.Select_v1[] GetQMParams(ref string sql)
         {
             // TODO @blf - I need to transform [%0] to {0}
             // It's not need to read the header becasue the tag is default.
@@ -102,7 +132,7 @@ namespace KCore.DB.Scripts
             var tagSplit = C.Tags.SAP_SPLIT;
             var tagClose = C.Tags.SAP_CLOSE;
 
-            var param = new List<KCore.Model.Select>();
+            var param = new List<KCore.Model.Select_v1>();
             var indexes = new List<string>(); // temporary solution
             for (int p = 0; p < sql.Length; p++)
             {
@@ -119,7 +149,7 @@ namespace KCore.DB.Scripts
 
                 if (!tag.Contains(tagSplit.ToString()) && !tag.Contains("select"))
                 {
-                    param.Add(new KCore.Model.Select(tag, null));
+                    param.Add(new KCore.Model.Select_v1(tag, null));
                     indexes.Add(tag);
                     continue;
                 }
@@ -138,7 +168,7 @@ namespace KCore.DB.Scripts
                 }
                 else
                 {
-                    param.Add(new KCore.Model.Select(vals[0], vals[1], true));
+                    param.Add(new KCore.Model.Select_v1(vals[0], vals[1], true));
                     indexes.Add(vals[0]);
                 }
 
@@ -200,7 +230,7 @@ namespace KCore.DB.Scripts
 
                         if (input)
                         {
-                            var list = new List<KCore.Model.Select>();
+                            var list = new List<KCore.Model.Select_v1>();
 
                             foreach (var param in val1.Split(tagParamSplit))
                             {
@@ -208,19 +238,19 @@ namespace KCore.DB.Scripts
                                 {
                                     var foo = param.Substring(tagInput.Length, param.Length - tagInput.Length - 1).Split('`');
                                     if (foo.Length > 1)
-                                        list.Add(new KCore.Model.Select(foo[0].ToLower(), foo[1], input));
+                                        list.Add(new KCore.Model.Select_v1(foo[0].ToLower(), foo[1], input));
                                     else
-                                        list.Add(new KCore.Model.Select(foo[0].ToLower(), null, input));
+                                        list.Add(new KCore.Model.Select_v1(foo[0].ToLower(), null, input));
                                 }
                                 else
-                                    list.Add(new KCore.Model.Select(param));
+                                    list.Add(new KCore.Model.Select_v1(param));
                             }
 
                             linkto.Parameters = list.ToArray();
                         }
                         else
                         {
-                            linkto.Parameters = KCore.Model.Select.Split(val1.ToString(), tagParamSplit);
+                            linkto.Parameters = KCore.Model.Select_v1.Split(val1.ToString(), tagParamSplit);
                         }
                         break;
                     case C.Tags.SPECIAL_DISPLAY:

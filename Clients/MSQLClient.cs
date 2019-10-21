@@ -1,9 +1,7 @@
-﻿using KCore;
-using KCore.Model;
+﻿using KCore.Model;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Text;
 
 namespace KCore.DB.Clients
 {
@@ -19,6 +17,7 @@ namespace KCore.DB.Clients
         public bool IsFirstLine { get; private set; }
         public int FieldCount { get; internal set; }
         public DataInfo DataInfo { get; private set; }
+        public KCore.C.Database.ClientType ClientType => KCore.C.Database.ClientType.SQLClient;
 
         private bool hasLine;
 
@@ -42,7 +41,7 @@ namespace KCore.DB.Clients
         {
             var dataInfo = DefDataInfo.Clone();
             dataInfo.Schema = dbase;
-            Connect(dbase);
+            Connect(dataInfo);
         }
 
         /// <summary>
@@ -62,7 +61,7 @@ namespace KCore.DB.Clients
         /// <param name="cred">Credential to connect</param>
         /// <param name="def">Is connection default?</param>
         /// <param name="dbase">Which database?</param>
-        public void Connect(Credential2 cred)
+        public void Connect(Credential_v2 cred)
         {
 
             var dataInfo = new DataInfo(
@@ -72,7 +71,7 @@ namespace KCore.DB.Clients
                 cred.GetPasswd(),
                 cred.GetProperty("Port"),
                 cred.GetProperty("Driver"),
-                KCore.C.Database.ServerType.Hana);
+                KCore.C.Database.DBaseType.Hana);
 
             Connect(dataInfo);
 
@@ -91,15 +90,12 @@ namespace KCore.DB.Clients
             try
             {
                 if (Conn != null)
-                {
                     Dispose();
-                    Conn.Open();
-                }
-                else
-                {
-                    Conn = new SqlConnection(dataInfo.ToConnString());
-                    Conn.Open();
-                }
+
+
+                Conn = new SqlConnection(dataInfo.ToConnString());
+                Conn.Open();
+
 
                 DataInfo = dataInfo;
                 return;
@@ -140,7 +136,7 @@ namespace KCore.DB.Clients
         {
             Clear();
 
-            Factory.Scripts.Prepare(false, ref sql, values);
+            Factory_v1.Scripts.Prepare(DataInfo.DBaseType, false, ref sql, values);
             this.LastCommand = sql;
             this.Command = new SqlCommand(sql, Conn);
             this.DataReader = Command.ExecuteReader();
@@ -153,7 +149,7 @@ namespace KCore.DB.Clients
                 FieldCount = DataReader.FieldCount;
             }
 
-            hasLine =  DataReader.HasRows;
+            hasLine = DataReader.HasRows;
 
             return hasLine;
 
@@ -266,36 +262,26 @@ namespace KCore.DB.Clients
 
         public bool HasTable(string database, string table)
         {
-            var sql = "SELECT top 1 1 FROM " + database + ".INFORMATION_SCHEMA.TABLES WHERE TABLE_CATALOG = {0} AND TABLE_NAME = {1}";
+            var sql = "SELECT top 1 1 FROM " + database + ".INFORMATION_SCHEMA.TABLES WHERE /*TABLE_CATALOG = {0} AND*/ TABLE_NAME = {1}";
 
             return DoQuery(sql, database, table);
-        }
+        }        
 
-        public bool HasColumn(string database, string table, string column)
-        {
-            var sql = "SELECT TOP 1 1 FROM " + database + @".INFORMATION_SCHEMA.COLUMNS
-WHERE  TABLE_CATALOG = {0}
-    AND TABLE_NAME = {1}
-    AND COLUMN_NAME = {2}";
-
-            return DoQuery(sql, database, table, column);
-        }
-
-        public ColumnStruct[] Columns(string dsource, string table)
+        public ColumnStruct[] Columns(string table)
         {
             var list = new List<ColumnStruct>();
-            DoQuery(Content.queries_general.LOCAL_COLUMNS_4_DBASE_TABLE, dsource, table);
+            DoQuery(Content.queries_msql.LOCAL_COLUMNS_4_DBASE_TABLE, table);
             while (Next())
             {
                 list.Add(new ColumnStruct(
-                    dsource,
-                    table,
+                    Field("DBase").ToString(),
+                    Field("Table").ToString(),
                     Field("Name").ToString(),
                     MSQLClient.GetColumnType(Field("Type").ToString()),
                     Field("Request").ToBool(),
                     null,
                     Field("Size").ToInt(),
-                    Field("PK").ToBool()));;
+                    Field("PK").ToBool()));
             }
 
             return list.ToArray();
@@ -315,7 +301,10 @@ WHERE  TABLE_CATALOG = {0}
                 case "datetime": return KCore.C.Database.ColumnType.DateTime;
                 case "int": return KCore.C.Database.ColumnType.Number;
                 case "char": return KCore.C.Database.ColumnType.Char;
-                default: throw new KDBException(LOG, C.MessageEx.FatalError1_1, type);
+                case "smallint": return KCore.C.Database.ColumnType.Int;
+                case "ntext": return KCore.C.Database.ColumnType.Text;
+                case "numeric": return KCore.C.Database.ColumnType.Number;
+                default: throw new NotImplementedException($"MSQL.GetColumnType().Type of column {type} is not defined");
             }
         }
 

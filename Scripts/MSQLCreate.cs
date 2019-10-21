@@ -1,12 +1,9 @@
-﻿using KCore;
-using KCore.Base;
+﻿using KCore.Base;
 using KCore.Model;
-using KCore.DB;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 
 namespace KCore.DB.Scripts
 {
@@ -57,43 +54,41 @@ namespace KCore.DB.Scripts
             AddColumnRequere("Created", KCore.C.Database.ColumnType.DateTime);
             AddColumnRequere("Updated", KCore.C.Database.ColumnType.DateTime);
 
-            using (var client = (IBaseClient)Activator.CreateInstance(Factory.__client, new object[] { true }))
+            using (var client = (IBaseClient)Activator.CreateInstance(Factory_v1.__client, new object[] { true }))
             {
                 try
                 {
                     if (!client.HasDatabase(database))
                     {
-                        var sql = $"CREATE DATABASE {database}"; 
+                        var sql = $"CREATE DATABASE {database}";
                         client.NoQuery(sql);
                     }
 
-                    if(!client.HasTable(database, table))
+                    if (!client.HasTable(database, table))
                     {
                         var col = new string[columns.Count];
 
                         for (int i = 0; i < columns.Count; i++)
                             col[i] = ColumnCommand(columns[i]);
 
-                        var sql = $"CREATE TABLE {database}..{table.ToString()}({String.Join(",",col)})";
+                        var sql = $"CREATE TABLE {database}..{table.ToString()}({String.Join(",", col)})";
                         client.NoQuery(sql);
 
                         var sql1 = $"ALTER TABLE {database}..{table} ADD CONSTRAINT PK_{table.ToUpper()}_{DateTime.Now.ToString("yyMMdd")} PRIMARY KEY CLUSTERED ([{String.Join("],[", pkeys)}])";
                         client.NoQuery(sql1);
 
-                    } else
+                    }
+                    else
                     {
                         for (int i = 1; i < columns.Count(); i++)
                         {
-                            if (!client.HasColumn(database, table, columns[i].Name))
+                            if (!DB.Factory.Properties.Column.NoCache.Exists(database, table, columns[i].Name))
                             {
                                 var sql = ColumnCommand(columns[i]);
                                 client.NoQuery($"ALTER TABLE {database}..{table} ADD {sql}");
                             }
                         }
                     }
-
-                   
-
                 }
                 catch (SqlException ex)
                 {
@@ -113,7 +108,7 @@ namespace KCore.DB.Scripts
 
             var command = String.Empty;
 
-            if(colStrunct.ColType == KCore.C.Database.ColumnType.Text)
+            if (colStrunct.ColType == KCore.C.Database.ColumnType.Text)
                 command = $@" [{colStrunct.Name}] {Clients.MSQLClient.GetColumnType(colStrunct.ColType)}({colStrunct.Size}) {(required ? "not" : "")} null";
             else
                 command = $@" [{colStrunct.Name}] {Clients.MSQLClient.GetColumnType(colStrunct.ColType)} {(required ? "not" : "")} null";

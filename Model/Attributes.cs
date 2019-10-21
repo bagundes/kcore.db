@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KCore.DB.Model
+﻿namespace KCore.DB.Model
 {
     public sealed class AttributeTable : KCore.DB.Base.InternalCodeTable
     {
 
-        public string Code => $"{TabInfo.DataSource}.{table}.{column}";
+        public string Code => $"{TableInfo.DBase}.{table}.{column}";
         public string table;
         public string column;
         public string source;
@@ -25,9 +21,9 @@ namespace KCore.DB.Model
                 typeID = (char)value;
             }
         }
-        public AttributeTable() : base("Attributes", new string[]{ "Code" }, false)
-        {        
-            
+        public AttributeTable() : base("Attributes", new string[] { "Code" }, false)
+        {
+
         }
 
     }

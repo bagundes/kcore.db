@@ -18,7 +18,7 @@ namespace KCore.DB.Model
         public List<Line> Data = new List<Line>();
         public bool HasSpecialColumn { get; protected set; } = false;
         public string SpecialColumnTag { get; protected set; }
-        
+
 
         /// <summary>
         /// Result["Column"][line]
@@ -26,7 +26,8 @@ namespace KCore.DB.Model
         private Dictionary<string, List<KCore.Dynamic>> Array = new Dictionary<string, List<KCore.Dynamic>>();
 
         public dynamic this[string column, int line]
-        { get
+        {
+            get
             {
                 return Array[column][line];
             }
@@ -42,10 +43,10 @@ namespace KCore.DB.Model
         /// <param name="line">Line position (-1: addline)</param>
         public void AddData(string column, dynamic value, int line = -1)
         {
-            if (Scripts.MyTags.HasSpecialTag(ref column))
+            if (Factory.MyTags.HasSpecialTag(ref column))
             {
                 HasSpecialColumn = true;
-                value = Scripts.MyTags.LinkTo(value);
+                value = Factory.MyTags.LinkTo(value);
             }
 
             if (line < 0)
@@ -62,12 +63,12 @@ namespace KCore.DB.Model
                 Data[line].Columns[GetColumnIndex(column)] = new Column(column, value, null);
             }
 
-            if(Array.ContainsKey(column))
+            if (Array.ContainsKey(column))
             {
                 var lastLine = Array[column].Count;
                 if (lastLine > line)
                 {
-                    if(value.GetType().Equals(typeof(KCore.Dynamic)))
+                    if (value.GetType().Equals(typeof(KCore.Dynamic)))
                         Array[column][line] = value;
                     else
                         Array[column][line] = $"Object:{value.GetType()}";
@@ -80,29 +81,30 @@ namespace KCore.DB.Model
                     else
                         Array[column].Add($"Object:{value.GetType()}");
                 }
-                    
-            } else
+
+            }
+            else
             {
                 var foo = new List<KCore.Dynamic>();
-                
+
                 foo.Add(new KCore.Dynamic(value));
                 Array.Add(column, foo);
             }
 
         }
 
-        public KCore.Model.Select[] ToSelect(bool encrypt = false)
+        public KCore.Model.Select_v1[] ToSelect(bool encrypt = false)
         {
-            var select = new List<KCore.Model.Select>();
-            
+            var select = new List<KCore.Model.Select_v1>();
+
 
 
             foreach (var line in Data)
             {
                 var value = line.Columns[0].Value;
-                var text = line.Columns.Count > 1 ? line.Columns[1].Value : value;                
+                var text = line.Columns.Count > 1 ? line.Columns[1].Value : value;
 
-                select.Add(new KCore.Model.Select(value, text, encrypt));
+                select.Add(new KCore.Model.Select_v1(value, text, encrypt));
             }
 
             return select.ToArray();
@@ -120,7 +122,7 @@ namespace KCore.DB.Model
 
 
             var index = GetColumnIndex(column);
-            var specialTag = Scripts.MyTags.HasSpecialTag(column, out columName, out tag);
+            var specialTag = Factory.MyTags.HasSpecialTag(column, out columName, out tag);
 
             if (specialTag)
             {

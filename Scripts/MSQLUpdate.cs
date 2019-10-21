@@ -1,52 +1,64 @@
-﻿using KCore.DB.Base;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace KCore.DB.Scripts
 {
     public class MSQLUpdate : IUpdate
     {
-        public string Model<T>(T model) where T : KCore.Base.BaseTable
+        public string Model<T>(T model) where T : KCore.Base.BaseTable_v1
         {
-            var res = KCore.DB.Factory.Result.Top(1, (new MSQLSelect()).ByPKey(model));
+            if (model.Fields == null)
+                throw new NotImplementedException("This object is not loaded");
+
+            var res = KCore.DB.Factory.Result.Top(1, model.TableInfo.DBase, (new MSQLSelect()).ByVPKey(model));
+
+            if (res == null)
+                return null;
+
             var columns = new List<String>();
             var data = new List<dynamic>();
 
-            data.Add(DateTime.Now);
-            columns.Add("[Updated]  = {" + columns.Count + "}");
 
-            foreach (var p in KCore.Reflection.FilterOnlySetProperties(model))
+            foreach (var p in KCore.Reflection.FilterOnlyGetProperties(model))
             {
 
                 var value = p.GetValue(model) ?? String.Empty;
+                
 
-                if (!(model.TabInfo.PKey.Where(t => t == p.Name).Any())
-                    && value.ToString().Equals(res[p.Name, 0].ToString(), StringComparison.CurrentCultureIgnoreCase))
+
+                if (res.HasColumn(p.Name)
+                   // && !(model.TableInfo.PKey.Where(t => t == p.Name).Any())
+                    && value.ToString().ToUpper() != res[p.Name, 0].ToString().ToUpper())
                 {
+                    if (String.IsNullOrEmpty(value.ToString()) && KCore.DB.Factory.Properties.Column.Required(model, p.Name))
+                        value = null;
+
                     data.Add(value);
                     columns.Add("[" + p.Name + "] = {" + columns.Count + "}");
                 }
             }
 
             var sql = $@"
-UPDATE   [{model.TabInfo.DataSource}]..[{model.TabInfo.Table}] 
+UPDATE   [{model.TableInfo.Name}] 
 SET      {String.Join(",", columns.ToArray())}
 WHERE    ";
 
+            var where = new string[model.TableInfo.PKey.Count()];
 
-
-
-
-            var where = new string[model.TabInfo.PKey.Count()];
-
-            for (int i = 0; i < model.TabInfo.PKey.Count(); i++)
-                where[i] += $" [{ model.TabInfo.PKey[i]}] = '{model.GetPKeyValue(i)}' ";
+            for (int i = 0; i < model.TableInfo.PKey.Count(); i++)
+            {
+                var foo = model.TableInfo.PKey[i];
+                where[i] += $" [{foo}] = '{model.Fields[foo]}' ";
+            }
 
             sql += String.Join(" AND ", where);
 
             MSQLFix.Format(ref sql, data.ToArray());
+
+
+            if (columns.Count < 1 || where.Length < 1)
+                return null;
 
             return sql;
         }

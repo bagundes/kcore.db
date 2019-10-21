@@ -1,8 +1,4 @@
 ﻿using KCore.DB.Model;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
 
 namespace KCore.DB.Stored
 {
@@ -13,14 +9,15 @@ namespace KCore.DB.Stored
         {
             get
             {
-                if (Factory.DataInfo.ServerType == KCore.C.Database.ServerType.Hana)
+                if (Factory_v1.DataInfo.DBaseType == KCore.C.Database.DBaseType.Hana)
                 {
-                    Debug.WriteLine("@bfagundes - Hana doesn't support cache attributes");
+                    Debug.Save("@bfagundes - Hana doesn't support cache attributes");
                     attributes = new AttributeTable[0];
-                } else
+                }
+                else
                 {
                     if (attributes == null)
-                        attributes = Factory.Result.Models<AttributeTable>();
+                        attributes = Factory_v1.Result.Models<AttributeTable>();
                 }
 
 

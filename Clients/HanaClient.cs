@@ -1,9 +1,8 @@
-﻿using KCore;
-using KCore.Model;
+﻿using KCore.Model;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Data.Odbc;
+using System.Data.SqlClient;
 
 namespace KCore.DB.Clients
 {
@@ -20,8 +19,8 @@ namespace KCore.DB.Clients
         public bool IsFirstLine { get; private set; }
         public int FieldCount { get; internal set; }
         public DataInfo DataInfo { get; private set; }
-
         private bool hasLine;
+        public KCore.C.Database.ClientType ClientType => KCore.C.Database.ClientType.HanaClient;
 
         /// <summary>
         /// 
@@ -63,7 +62,7 @@ namespace KCore.DB.Clients
         /// <param name="cred">Credential to connect</param>
         /// <param name="def">Is connection default?</param>
         /// <param name="dbase">Which database?</param>
-        public void Connect(Credential2 cred)
+        public void Connect(Credential_v2 cred)
         {
             var dataInfo = new DataInfo(
                 cred.Host,
@@ -72,7 +71,7 @@ namespace KCore.DB.Clients
                 cred.GetPasswd(),
                 cred.GetProperty("Port").ToInt(),
                 cred.GetProperty("Driver").ToString(),
-                KCore.C.Database.ServerType.Hana);
+                KCore.C.Database.DBaseType.Hana);
 
             dataInfo.Default = cred.GetProperty("Default").ToBool();
 
@@ -101,7 +100,7 @@ namespace KCore.DB.Clients
                 }
                 else
                 {
-                    Conn = new  OdbcConnection(dataInfo.ToConnString());
+                    Conn = new OdbcConnection(dataInfo.ToConnString());
                     Conn.Open();
                 }
 
@@ -144,7 +143,7 @@ namespace KCore.DB.Clients
         {
             Clear();
 
-            Factory.Scripts.Prepare(false, ref sql, values);
+            Factory_v1.Scripts.Prepare(DataInfo.DBaseType, false, ref sql, values);
             this.LastCommand = sql;
             this.Command = new OdbcCommand(sql, Conn);
             this.DataReader = Command.ExecuteReader();
@@ -157,7 +156,7 @@ namespace KCore.DB.Clients
                 FieldCount = DataReader.FieldCount;
             }
 
-            hasLine =  DataReader.HasRows;
+            hasLine = DataReader.HasRows;
 
             return hasLine;
 
@@ -285,26 +284,7 @@ WHERE  TABLE_CATALOG = {0}
             return DoQuery(sql, database, table, column);
         }
 
-        public ColumnStruct[] Columns(string dsource, string table)
-        {
-            var list = new List<ColumnStruct>();
-            DoQuery(Content.queries_general.LOCAL_COLUMNS_4_DBASE_TABLE, dsource, table);
-            while (Next())
-            {
-                list.Add(new ColumnStruct(
-                    dsource,
-                    table,
-                    Field("Name").ToString(),
-                    HanaClient.GetColumnType(Field("Type").ToString()),
-                    Field("Request").ToBool(),
-                    null,
-                    Field("Size").ToInt(),
-                    Field("PK").ToBool()));;
-            }
-
-            return list.ToArray();
-        }
-
+        public ColumnStruct[] Columns(string table) => throw new NotImplementedException("HanaClient.Columns");        
         #endregion
     }
 
